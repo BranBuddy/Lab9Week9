@@ -40,6 +40,7 @@ public class TankEnemy : MonoBehaviour
     {
         if(collision.tag == "bullet")
         {
+            Destroy(this.gameObject);
             GameManager.Instance.Score(pointAmount);
         }
     }

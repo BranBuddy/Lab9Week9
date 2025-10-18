@@ -39,6 +39,7 @@ public class DasherEnemy : MonoBehaviour
     {
         if (collision.tag == "bullet")
         {
+            Destroy(this.gameObject);
             GameManager.Instance.Score(pointAmount);
         }
     }
