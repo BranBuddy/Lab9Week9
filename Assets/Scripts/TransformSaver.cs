@@ -5,6 +5,7 @@ using UnityEngine;
 public class TransformSaverData
 {
     public Vector3 localPosition;
+    public bool isAlive;
     public string saveID;
 }
 
@@ -12,6 +13,8 @@ public class TransformSaver : MonoBehaviour, ISaveableInterface
 {
     public string saveId = Guid.NewGuid().ToString();
     public string SaveID => saveId;
+    public bool isAlive = true;
+    public bool aliveState => isAlive;
 
     private void OnValidate()
     {
@@ -27,6 +30,8 @@ public class TransformSaver : MonoBehaviour, ISaveableInterface
         {
             saveId = Guid.NewGuid().ToString();
         }
+
+        isAlive = true;
     }
 
     public string SavedData()
@@ -34,7 +39,8 @@ public class TransformSaver : MonoBehaviour, ISaveableInterface
         TransformSaverData data = new TransformSaverData
         {
             localPosition = this.transform.position,
-            saveID = SaveID
+            saveID = SaveID,
+            isAlive = aliveState
         };
 
         return JsonUtility.ToJson(data);
@@ -50,5 +56,6 @@ public class TransformSaver : MonoBehaviour, ISaveableInterface
         TransformSaverData loadData = JsonUtility.FromJson<TransformSaverData>(data);
 
         this.transform.position = loadData.localPosition;
+        this.transform.gameObject.SetActive(aliveState);
     }
 }
