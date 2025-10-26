@@ -1,11 +1,23 @@
 using UnityEngine;
 using TMPro;
+
+[System.Serializable]
+public class ScoreData
+{
+    public int score;
+
+    public ScoreData()
+    {
+        score = GameManager.score;
+    }
+}
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     [SerializeField] private TMP_Text scoreText;
-    
-    [SerializeField] private int score = 0;
+
+    public static int score = 0;
 
     void Awake()
     {

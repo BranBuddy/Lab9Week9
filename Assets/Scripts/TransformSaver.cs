@@ -1,30 +1,54 @@
-using LitJson;
+using System;
 using UnityEngine;
-using System.IO;
-using System.Linq;
 
-public class TransformSaver : MonoBehaviour
+[Serializable]
+public class TransformSaverData
 {
-    private const string SCORE_KEY = "score";
-    private const string LOCAL_POSITION_KEY = "localPosition";
+    public Vector3 localPosition;
+    public string saveID;
+}
 
-    private JsonData SerializeValue(object obj) { return JsonMapper.ToObject(JsonUtility.ToJson(obj)); }
+public class TransformSaver : MonoBehaviour, ISaveableInterface
+{
+    public string saveId = Guid.NewGuid().ToString();
+    public string SaveID => saveId;
 
-    public JsonData SavedData
+    private void OnValidate()
     {
-        get
+        if (string.IsNullOrEmpty(saveId))
         {
-            var result = new JsonData();
-            result[LOCAL_POSITION_KEY] = SerializeValue(transform.localPosition);
-            return result;
+            saveId = Guid.NewGuid().ToString();
         }
     }
-    
-    public void LoadFromData(JsonData data)
+
+    private void Awake()
     {
-        if (data.Keys.Contains(LOCAL_POSITION_KEY))
+        if (string.IsNullOrEmpty(saveId))
         {
-            transform.localPosition = DeserializeValue<Vector3>(data[LOCAL_POSITION_KEY]);
+            saveId = Guid.NewGuid().ToString();
         }
-     }
+    }
+
+    public string SavedData()
+    {
+        TransformSaverData data = new TransformSaverData
+        {
+            localPosition = this.transform.position,
+            saveID = SaveID
+        };
+
+        return JsonUtility.ToJson(data);
+    }
+    
+    public void LoadFromData(string data)
+    {
+        if (string.IsNullOrEmpty(data))
+        {
+            return;
+        }
+
+        TransformSaverData loadData = JsonUtility.FromJson<TransformSaverData>(data);
+
+        this.transform.position = loadData.localPosition;
+    }
 }
